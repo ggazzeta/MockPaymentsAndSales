@@ -20,7 +20,9 @@ Follow the steps below to get the API up and running locally:
 - An OpenAI API Key (to use ChatGPT completions API)
 
 ### 1. Clone the Repository
+```bash
 git clone https://github.com/ggazzeta/MockPaymentsAndSales
+```
 ### 2. Set Up Your API Key
 - In the appsettings.json file, replace {YOUR_KEY_HERE} with your OpenAI API key:
 
