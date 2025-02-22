@@ -8,7 +8,7 @@ namespace MockPaymentsAndSales.Gateways
     {
         public async Task<List<ReturnSale>> ReturnAllSales(int salesAmount, DateTime startTime, DateTime endTime)
         {
-            ILLMResponseGateway lLMResponseGateway = new ChatGPTResponseGateway();
+            ILLMResponseGateway lLMResponseGateway = new OllamaResponseGateway();
             string jsonString = await lLMResponseGateway.ReturnJsonFromLLMResponse(salesAmount, startTime, endTime);
             return DeserializeReturnJson(jsonString);
         }
