@@ -1,8 +1,4 @@
 using Moq;
-using Xunit;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MockPaymentsAndSales.Controllers;
 using MockPaymentsAndSales.Gateways.Interfaces;
 using MockPaymentsAndSales.ReturnObjects;
