@@ -16,18 +16,33 @@ namespace MockPaymentsAndSales.Helpers
             $"\nRemember, only provide me the RFC8259 compliant JSON response, with no comments. And don't use the Python Shell. Just create it in a generative fashion. For each sale, unite the JSON for the customers and payments on each sale instead of separting them.";
 
 
-        public static string ReturnPromptOfSales(int salesAmount, DateTime startDate, DateTime endDate, ReturnSale mockSale) => $$"""
-            # Desired response:
-            You will randomly generate me {{salesAmount}} JSON files similar to the following structure:
-            {{JsonSerializer.Serialize(mockSale)}}
-            You will not utilize the same JSON I just sent you, this is just a mock so that you randomly pick the data to create the next ones.
-            Each sale has to be between the dates: {{startDate.ToString("yyyyMMdd")}} and {{endDate.ToString("yyyyMMdd")}}
-            The payments can be a random amount of Payments for each SALE. But it needs to have at least ONE, and can't surpass TEN payments.
-            The payment methods are:
-            CREDIT, DEBIT, CASH
-            The payment date is optional. The Payment description should be something like "VISA CREDIT", "MASTER DEBIT" and so on and so forth 
-            Only provide a RFC8259 compliant JSON response following the mock format without deviation. DO NOT use the Python Shell and DO NOT return me a PYTHON CODE.
-            """;
+        public static string ReturnPromptOfSales(int salesAmount, DateTime startDate, DateTime endDate, List<ReturnSale> mockSale) => $$"""
+    You are an automated JSON generator. You MUST generate exactly {{salesAmount}} JSON objects following the structure below:
+    {{JsonSerializer.Serialize(mockSale)}}
+    
+    - Each sale must have a date between {{startDate:yyyyMMdd}} and {{endDate:yyyyMMdd}}.
+    - Each sale must have at least ONE and at most TEN payments.
+    - Payment methods must be one of the following: "CREDIT", "DEBIT", or "CASH".
+    - Payment descriptions should be in the format "VISA CREDIT", "MASTER DEBIT", etc.
+    - The payment date is optional.
+
+    # STRICT OUTPUT FORMAT REQUIREMENTS:
+    - You MUST return **ONLY** a valid RFC8259-compliant JSON output.
+    - NO explanations, introductions, or extra text—ONLY the JSON.
+    - The JSON MUST be **valid and properly formatted**. It **must** close all brackets `{}` and square brackets `[]` correctly.
+    - All sales must be inside **ONE SINGLE JSON ARRAY** like this:  
+      ✅ `[ {...}, {...}, {...} ]`  
+      ❌ **Do NOT** generate nested arrays like this: `[ [{...}], [{...}] ]`
+    - Your response MUST be fully parseable by `JSON.parse()` without any syntax errors.
+    - Do NOT wrap JSON in triple backticks, markdown, or any formatting.
+    - Do NOT write "Here is your JSON" or any similar phrase.
+
+    FAILURE TO FOLLOW THESE RULES WILL RESULT IN REJECTION.
+    """;
+
+
+
+
         /// <summary>
         /// Serializes a generic type <typeparamref name="T"/> into a JSON string, 
         /// including all properties with default or empty values.
@@ -64,11 +79,12 @@ namespace MockPaymentsAndSales.Helpers
             }
         }
 
-        public static ReturnSale MockSaleObject()
+        public static List<ReturnSale> MockSaleObject()
         {
+            List<ReturnSale> returnSales = new List<ReturnSale>();
             List<Payments> payments = MockPaymentList();
 
-            return new ReturnSale
+            var returnSale = new ReturnSale
             {
                 Sale = new Sale()
                 {
@@ -94,6 +110,9 @@ namespace MockPaymentsAndSales.Helpers
                 },
                 Payments = payments
             };
+
+            returnSales.Add(returnSale);
+            return returnSales;
         }
 
         public static List<Payments> MockPaymentList()
