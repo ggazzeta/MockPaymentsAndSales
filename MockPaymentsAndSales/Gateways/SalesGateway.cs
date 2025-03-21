@@ -6,6 +6,7 @@ namespace MockPaymentsAndSales.Gateways
 {
     public class SalesGateway : ISalesGateway
     {
+        /// <inheritdoc cref="ISalesGateway.ReturnAllSales(int, DateTime, DateTime)"/>
         public async Task<List<ReturnSale>> ReturnAllSales(int salesAmount, DateTime startTime, DateTime endTime)
         {
             ILLMResponseGateway lLMResponseGateway = new OllamaResponseGateway();
