@@ -9,11 +9,11 @@ namespace MockPaymentsAndSales.Test
 {
     public class MockSalesUnitTest
     {
+        Mock<ISalesGateway> _mockSalesGateway = new Mock<ISalesGateway>();
+
         [Fact]
         public async Task GetSales_ShouldReturnMockSalesData()
         {
-            var mockSalesGateway = new Mock<ISalesGateway>();
-
             var mockSalesData = new List<ReturnSale>
             {
                 new ReturnSale(
@@ -102,16 +102,29 @@ namespace MockPaymentsAndSales.Test
                 )
             };
 
-            mockSalesGateway
+            _mockSalesGateway
                 .Setup(sg => sg.ReturnAllSales(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(mockSalesData);
 
-            var controller = new SalesController(mockSalesGateway.Object);
+            var controller = new SalesController(_mockSalesGateway.Object);
 
             var result = await controller.GetSales(2, new DateTime(2024, 3, 1), new DateTime(2024, 3, 31));
 
             Assert.NotNull(result);
             Assert.Equal(2, result.Count);
+        }
+
+        [Fact]
+        public async Task GetSales_ShouldReturnInvalidOperationException()
+        {
+            var exception = new InvalidOperationException("LLM did not return a valid JSON and could not be formatted.");
+
+            _mockSalesGateway
+                .Setup(sg => sg.ReturnAllSales(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ThrowsAsync(exception);
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _mockSalesGateway.Object.ReturnAllSales(10, DateTime.Now, DateTime.Now));
         }
     }
 }
