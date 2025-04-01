@@ -7,20 +7,20 @@ namespace MockPaymentsAndSales.Gateways
     public class SalesGateway : ISalesGateway
     {
         /// <inheritdoc cref="ISalesGateway.ReturnAllSales(int, DateTime, DateTime)"/>
-        public async Task<List<ReturnSale>> ReturnAllSales(int salesAmount, DateTime startTime, DateTime endTime)
+        public async Task<IReadOnlyCollection<ReturnSale>> ReturnAllSales(int salesAmount, DateTime startTime, DateTime endTime)
         {
             ILLMResponseGateway lLMResponseGateway = new OllamaResponseGateway();
             string jsonString = await lLMResponseGateway.ReturnJsonFromLLMResponse(salesAmount, startTime, endTime);
-            return DeserializeReturnJson(jsonString);
+            return DeserializeReturnJson(jsonString).ToList();
         }
 
-        public List<ReturnSale> DeserializeReturnJson(string jsonString)
+        public IEnumerable<ReturnSale> DeserializeReturnJson(string jsonString)
         {
-            List<ReturnSale> returnSales = new List<ReturnSale>();
+            IEnumerable<ReturnSale> returnSales = new List<ReturnSale>();
 
             try
             {
-                returnSales = JsonSerializer.Deserialize<List<ReturnSale>>(jsonString);
+                returnSales = JsonSerializer.Deserialize<IEnumerable<ReturnSale>>(jsonString);
             }
             catch (Exception)
             {

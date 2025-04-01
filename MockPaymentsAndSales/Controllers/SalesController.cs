@@ -22,7 +22,7 @@ namespace MockPaymentsAndSales.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<ReturnSale>), 200)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<List<ReturnSale>> GetSales([Required(ErrorMessage = "This field is required."), Range(1, 5, ErrorMessage = "Min size is {0}, Max size is {1}")] int salesAmount,
+        public async Task<IReadOnlyCollection<ReturnSale>> GetSales([Required(ErrorMessage = "This field is required."), Range(1, 5, ErrorMessage = "Min size is {0}, Max size is {1}")] int salesAmount,
                                                         DateTime startDate, DateTime endDate)
         {
             return await _salesGateway.ReturnAllSales(salesAmount, startDate, endDate);
